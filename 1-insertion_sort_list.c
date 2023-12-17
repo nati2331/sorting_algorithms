@@ -8,39 +8,43 @@
 
 void insertion_sort_list(listint_t **list)
 {
-    if (list == NULL || *list == NULL || (*list)->next == NULL)
-        return;
+	listint_t *node;
 
-    listint_t *current = (*list)->next;
+	if (list == NULL || (*list)->next == NULL)
+		return;
+	node = (*list)->next;
+	while (node)
+	{
+		while ((node->prev) && (node->prev->n > node->n))
+		{
+			node = swap_node(node, list);
+			print_list(*list);
+		}
+		node = node->next;
+	}
+}
 
-    while (current)
-    {
-        listint_t *insert_pos = current->prev;
-        listint_t *temp = current->next;
+/**
+ * swap_node - exchanges a node with its preceding one
+ * @node: the node to be swapped
+ * @list: the linked list containing the node
+ * Return: returns a pointer to the node that has been moved
+ */
 
-        while (insert_pos != NULL && insert_pos->n > current->n)
-        {
-            insert_pos = insert_pos->prev;
-        }
+listint_t *swap_node(listint_t *node, listint_t **list)
+{
+	listint_t *back = node->prev, *current = node;
+	/*NULL, 19, 48, 9, 71, 13, NULL*/
 
-        if (insert_pos != current->prev)
-        {
-            if (current->next != NULL)
-                current->next->prev = current->prev;
-
-            if (current->prev != NULL)
-                current->prev->next = current->next;
-
-            current->next = (insert_pos != NULL) ? insert_pos->next : *list;
-            current->prev = insert_pos;
-
-            if (insert_pos != NULL)
-                insert_pos->next = current;
-            else
-                *list = current;
-        }
-
-        current = temp;
-        print_list(*list);
-    }
+	back->next = current->next;
+	if (current->next)
+		current->next->prev = back;
+	current->next = back;
+	current->prev = back->prev;
+	back->prev = current;
+	if (current->prev)
+		current->prev->next = current;
+	else
+		*list = current;
+	return (current);
 }
